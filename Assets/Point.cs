@@ -15,4 +15,8 @@ public class Point : MonoBehaviour
     {
         
     }
+
+    private void OnMouseDown() {
+        Debug.Log(this);
+    }
 }

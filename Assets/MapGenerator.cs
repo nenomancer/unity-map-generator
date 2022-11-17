@@ -5,19 +5,20 @@ using UnityEngine;
 public class MapGenerator : MonoBehaviour
 {
     [SerializeField]
-    GameObject _point;
+    Point _point;
 
     [SerializeField]
     GameObject _tile;
 
-    GameObject _startPoint;
-    GameObject _currentPoint;
-    GameObject _nextPoint;
+    Point _startPoint;
+    Point _endPoint;
+    Point _currentPoint;
+    Point _nextPoint;
 
-    GameObject[] _points;
+    Point[] _points;
 
     [SerializeField]
-    List<GameObject> _possiblePoints;
+    List<Point> _possiblePoints;
 
     [SerializeField]
     int _mapHeight = 10;
@@ -29,7 +30,7 @@ public class MapGenerator : MonoBehaviour
     Vector2Int _startPointCoords = new Vector2Int(1, 3);
 
     [SerializeField]
-    Vector2Int _endPoint = new Vector2Int(4, 7);
+    Vector2Int _endPointCoords = new Vector2Int(4, 7);
 
     [SerializeField]
     int numOfPossiblePoints;
@@ -40,10 +41,10 @@ public class MapGenerator : MonoBehaviour
     private void Start()
     {
         GenerateGrid();
-        // GenerateStartPoint();
         _startPoint = GeneratePoint(_startPointCoords.x, _startPointCoords.y);
-
-        Debug.Log("started");
+        _endPoint = GeneratePoint(_endPointCoords.x, _endPointCoords.y);
+        _currentPoint = _startPoint;
+        _endPoint.name = "_endPoint";
         _startPoint.name = "_startPoint";
     }
 
@@ -51,7 +52,6 @@ public class MapGenerator : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("FUck");
             GeneratePossiblePoints();
         }
     }
@@ -67,29 +67,27 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    // private void OnDrawGizmos()
-    // {
-    //     Vector3 startPoint = new Vector3(_startPointCoords.x, 0, _startPointCoords.y);
-    //     Vector3 endPoint = new Vector3(_endPoint.x, 0, _endPoint.y);
+    private void OnDrawGizmos()
+    {
+        Vector3 startPoint = new Vector3(_startPointCoords.x, 0, _startPointCoords.y);
+        Vector3 endPoint = new Vector3(_endPointCoords.x, 0, _endPointCoords.y);
 
-    //     for (int y = 0; y < _mapHeight; y++)
-    //     {
-    //         for (int x = 0; x < _mapWidth; x++)
-    //         {
-    //             Gizmos.DrawWireCube(new Vector3(x, 0, y), new Vector3(1, 0, 1));
-    //         }
-    //     }
-    //     Gizmos.color = Color.blue;
-    //     Gizmos.DrawSphere(startPoint, .2f);
+        for (int y = 0; y < _mapHeight; y++)
+        {
+            for (int x = 0; x < _mapWidth; x++)
+            {
+                Gizmos.DrawWireCube(new Vector3(x, 0, y), new Vector3(1, 0, 1));
+            }
+        }
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(startPoint, .2f);
 
-    //     Gizmos.color = Color.green;
-    //     Gizmos.DrawSphere(endPoint, .2f);
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(endPoint, .2f);
 
-    //     Gizmos.color = Color.green;
-    //     Gizmos.DrawLine(startPoint, endPoint);
-
-    //     GeneratePossiblePoints();
-    // }
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(startPoint, endPoint);
+    }
 
     // void GenerateStartPoint()
     // {
@@ -98,10 +96,10 @@ public class MapGenerator : MonoBehaviour
     //     _currentPoint = _startPoint;
     // }
 
-    GameObject GeneratePoint(int x, int y)
+    Point GeneratePoint(int x, int y)
     {
         Vector3 position = new Vector3(x, 0, y);
-        GameObject point = Instantiate(_point, position, Quaternion.identity);
+        Point point = Instantiate(_point, position, Quaternion.identity);
 
         return point;
     }
@@ -110,19 +108,11 @@ public class MapGenerator : MonoBehaviour
     {
         for (int i = numOfPossiblePoints; i > 0; i--)
         {
-            GameObject possiblePoint = GeneratePoint(
+            Point possiblePoint = GeneratePoint(
                 Random.Range(0, _mapWidth),
                 Random.Range(0, _mapHeight)
             );
-            _possiblePoints.Add(possiblePoint as GameObject);
+            _possiblePoints.Add(possiblePoint);
         }
-    }
-
-    Vector3 GenerateRandomPosition(int min)
-    {
-        int xPosition = Random.Range(0, _mapWidth);
-        int yPosition = Random.Range(min, _mapHeight);
-
-        return new Vector3(xPosition, 0, yPosition);
     }
 }
